@@ -1,0 +1,11 @@
+"""Ricerca di struttura non casuale in dati quantistici pubblici."""
+
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = PROJECT_ROOT / "data"
+RAW_DIR = DATA_DIR / "raw"
+RESULTS_DIR = PROJECT_ROOT / "results"
+TOOLS_DIR = PROJECT_ROOT / "tools" / "build"
+
+ALPHA = 0.01

@@ -1,0 +1,6 @@
+data/raw/
+tools/build/
+__pycache__/
+*.pyc
+.pytest_cache/
+results/**/*.tmp

@@ -204,4 +204,31 @@ parti. Se un dataset non è raggiungibile lo si segnala e si passa al successivo
 
 ## Deviazioni
 
-(nessuna al momento della registrazione)
+Tutte decise durante la validazione del codice su dati sintetici o di `os.urandom`, **prima**
+di eseguire la batteria sui controlli o su dati reali.
+
+1. **(2026-10-01) T4/T5 sulle sequenze di simboli (`joint`, Sycamore `hw`).** Il §5 prevedeva
+   di applicarli "sui simboli codificati" in binario. Su prove sintetiche con statistica
+   quantistica esatta questo dà p ≈ 0: i bit di una stessa prova sono correlati per
+   costruzione (correlazioni di Bell, setting/esito), e centrare con la media globale crea
+   una periodicità spuria di periodo pari alla larghezza del simbolo. Sotto il nullo "prove
+   i.i.d." si usano quindi: T4 sui valori interi dei simboli centrati; T5 con un byte per
+   simbolo e surrogati ottenuti permutando i simboli (non i bit).
+2. **(2026-10-01) T1, dettagli d'implementazione di sts-2.1.2.**
+   (a) Il P-value di uniformità si calcola in Python con la formula NIST (10 classi,
+   igamc(9/2, χ²/2)), ma con atteso k/10 non troncato: il codice C usa una divisione intera.
+   (b) La regola k ≥ 55 / Fisher si applica per riga al numero di sequenze *valide* della
+   riga. Conta solo per Random Excursions (Variant), dove le sequenze con J < 500 non sono
+   valide.
+   (c) Se `assess` interrompe Random Excursions perché i cicli sono troppi
+   (J > max(1000, n/100)), la riga viene esclusa e segnalata come "interrotta".
+   (d) Con una sola sequenza (N < 2·10^6) ogni test gira in un processo `assess` separato.
+   `assess` va in segfault nel rapporto finale quando un p-value non è in [0, 1], e questo
+   può far perdere i risultati degli altri test. I p-value fuori da [0, 1] si scartano.
+   (e) Il file d'ingresso è riempito fino a un multiplo di 4 byte, perché il lettore binario
+   legge parole di 4 byte. Il riempimento non viene analizzato.
+   (f) Per NonOverlappingTemplate, che non ha un minimo esplicito, si usa la soglia
+   conservativa N ≥ 10^5.
+   (g) `csrc.nist.gov` non è raggiungibile da questo ambiente. `tools/build_tools.sh` prova
+   lo zip ufficiale e, se fallisce, usa la copia GitHub terrillmoore/NIST-Statistical-Test-Suite
+   (codice NIST originale), con il commit fissato.
